@@ -1,5 +1,7 @@
 package com.example.demo.student;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -17,6 +19,12 @@ class StudentRepositoryTest {
     @Autowired
     private StudentRepository underTest;
 
+    // For each test delete everyone (to have a clear state)
+    @AfterEach
+    void tearDown() {
+        underTest.deleteAll();
+    }
+
     @Test
     void itShouldFindStudentByEmail() {
         // given
@@ -32,5 +40,18 @@ class StudentRepositoryTest {
 
         // then
         assertThat(expected).isTrue();
+    }
+
+    @Test
+    void itShouldNotFindStudentByEmail() {
+        // given
+        String email = "jamila@gmail.com";
+
+        // when
+        Optional<Student> studentByEmail = underTest.findStudentByEmail(email);
+        boolean expected = studentByEmail.isPresent();
+
+        // then
+        assertThat(expected).isFalse();
     }
 }
